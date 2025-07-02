@@ -14,8 +14,10 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 const userRoutes = require("./src/routes/user.routes")
+const friendRoutes = require("./src/routes/friends.routes");
 
 app.use("/users", userRoutes);
+app.use("/friends", friendRoutes);
 
 
 
