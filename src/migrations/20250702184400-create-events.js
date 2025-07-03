@@ -9,23 +9,29 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable("events", {
-      id: {
+    await queryInterface.createTable("events",{
+      id:{
         type: Sequelize.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true
       },
-      user_id:{
+      id_user:{
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         references: {
-          model:"users",
-          key:"id"
-        }
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
-      image_url:{
+      date_event: {
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      img_path: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: false
       },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE

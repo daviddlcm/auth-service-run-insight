@@ -3,7 +3,7 @@ const UserStats = require("./user.stats.model");
 const ExperienceLevel = require("./user.experience.model");
 const Genders = require("./user.genders.model");
 const Roles = require("./user.roles.model");
-const Events = require("./user.event.model")
+const Events = require("./user.events.model")
 const Follows = require("./user.follows.model");
 
 User.hasOne(UserStats, { foreignKey: "user_id", as: "stats" });
@@ -13,8 +13,8 @@ User.belongsTo(Roles, { foreignKey: "rolesId", as: "role" });
 UserStats.belongsTo(User, { foreignKey: "user_id", as: "user" });
 UserStats.belongsTo(ExperienceLevel, { foreignKey: "exp_level_id", as: "expLevel" });
 
-User.hasMany(Events, { foreignKey: "user_id", as: "events" });
-Events.belongsTo(User, { foreignKey: "user_id", as: "user" });
+User.hasMany(Events, { foreignKey: "id_user", as: "events" });
+Events.belongsTo(User, { foreignKey: "id_user", as: "user" });
 
 User.belongsToMany(User,{
     through: "follows",

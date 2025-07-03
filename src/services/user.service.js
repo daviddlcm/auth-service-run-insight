@@ -3,8 +3,11 @@ const { Genders } = require("../models/index");
 const { UserStats } = require("../models/index");
 const { ExperienceLevel } = require("../models/index");
 const { Follows } = require("../models/index");
+const { Events } = require("../models/index");
 const { Op } = require("sequelize");
 const jwt = require("jsonwebtoken");
+const {uploadImage} = require("../configs/cloudinary.config")
+const fs = require("fs-extra")
 
 const createUserService = async (data) => {
   const t = await User.sequelize.transaction();
@@ -191,6 +194,91 @@ const updateUserService = async (id, weight, height) => {
   }
 };
 
+const updateTrainingCounterService = async (id) => {
+  try{
+    const user = await UserStats.findByPk(id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    //console.log(user)
+
+    const updatedUser = await UserStats.update(
+      { training_counter: user.training_counter + 1 },
+      {
+        where: { id },
+        returning: true,
+      }
+    );
+    //console.log(updatedUser)
+
+    return updatedUser;
+  }catch(error){
+    throw error;
+  }
+}
+
+const updateKilometersService = async (id, km) => {
+  //console.log(id, km)
+  const t = await UserStats.sequelize.transaction();
+  try {
+    const user = await UserStats.findByPk(id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    //console.log(user)
+
+    const updatedUser = await UserStats.update(
+      { km_total: user.km_total + km },
+      {
+        where: { id },
+        returning: true,
+        transaction: t,
+      }
+    );
+    await t.commit();
+    //console.log(updatedUser)
+
+    return updatedUser;
+  } catch (error) {
+    await t.rollback();
+    throw error;
+  }
+};
+
+const updateBestRhythmService = async (id, rhythm) => {
+  const t = await UserStats.sequelize.transaction();
+  try {
+    const user = await UserStats.findByPk(id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    console.log(user.best_rhythm)
+    console.log(rhythm)
+    if (user.best_rhythm >= rhythm) {
+      //t.rollback()
+      throw new Error("New rhythm is not better than the current best rhythm");
+    }
+
+    const updatedUser = await UserStats.update(
+      { best_rhythm: rhythm },
+      {
+        where: { id },
+        returning: true,
+        transaction: t,
+      }
+    );
+    await t.commit();
+    //console.log(updatedUser)
+
+    return updatedUser;
+  } catch (error) {
+    await t.rollback();
+    throw error;
+  }
+};
+
+
+
 
 
 module.exports = {
@@ -199,4 +287,7 @@ module.exports = {
   loginService,
   deleteUserService,
   updateUserService,
+  updateTrainingCounterService,
+  updateKilometersService,
+  updateBestRhythmService
 };
