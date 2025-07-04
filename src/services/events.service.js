@@ -113,17 +113,7 @@ const getEventByFutureDateService = async (dateUnknown) => {
     }
 }
 
-// const getStartOfMexicoDayUtc = () => {
-//   // Crea un DateTime en la zona horaria de México, a la medianoche local
-//   const mexicoMidnight = DateTime.now()
-//     .setZone("America/Mexico_City")
-//     .startOf("day");
 
-//   // Convierte a UTC (devuelve un objeto DateTime en UTC)
-//   const mexicoMidnightUtc = mexicoMidnight.toUTC();
-
-//   return mexicoMidnightUtc.toJSDate(); // convierte a objeto Date de JS
-// };
 
 
 
