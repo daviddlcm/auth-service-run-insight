@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-   await queryInterface.bulkInsert("Genders", [
+   await queryInterface.bulkInsert("genders", [
     {id:1, gender: "Masculino", createdAt: new Date(), updatedAt: new Date()},
     {id:2, gender: "Femenino", createdAt: new Date(), updatedAt: new Date()},
     {id:3, gender: "No binario", createdAt: new Date(), updatedAt: new Date()},
@@ -28,6 +28,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    await queryInterface.bulkDelete("Genders", null, {})
+    await queryInterface.bulkDelete("genders", null, {})
   }
 };
