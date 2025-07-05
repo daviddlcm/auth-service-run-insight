@@ -43,7 +43,7 @@ User.init(
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         references: {
-            model:"genders",
+            model:"Genders",
             key:"id"
         }
     },
@@ -59,7 +59,7 @@ User.init(
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
-        model: "roles",
+        model: "Roles",
         key: "id",
       },
     }
