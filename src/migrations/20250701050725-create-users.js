@@ -41,7 +41,7 @@ module.exports = {
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         references: {
-          model: "Genders",
+          model: "genders",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -59,7 +59,7 @@ module.exports = {
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,
         references: {
-          model: "Roles",
+          model: "roles",
           key: "id",
         },
         onUpdate: "CASCADE",
