@@ -83,14 +83,16 @@ const getUserByIdService = async (id) => {
         },
       ],
     });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
     const gender = await getGender(user.genderId);
     //console.log(gender)
     const expLevel = await getExperienceLevel(user.stats.exp_level_id);
     //console.log(expLevel)
 
-    if (!user) {
-      throw new Error("User not found");
-    }
+    
     const newUser = {
       id: user.id,
       name: user.name,
@@ -127,6 +129,7 @@ const getExperienceLevel = async (id) => {
 
 const loginService = async (email, password) => {
   try {
+    //console.log("Login attempt with email:", email, " ", password);
     const user = await User.findOne({
       where: {
         [Op.or]: [{ email: email }, { username: email }],

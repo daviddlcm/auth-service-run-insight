@@ -50,6 +50,7 @@ const getUserById = async (req,res) => {
 const login = async (req,res) => {
   try{
     const {email, password} = req.body;
+    console.log("Login attempt with email:", email," ", password);
 
     const user = await loginService(email,password)
 
