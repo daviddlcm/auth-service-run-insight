@@ -32,9 +32,9 @@ const getBadgetById = async (req,res) => {
 
 const getBadgesByUserId = async (req,res) => {
     try{
-        console.log("Fetching badges for user");
+        //console.log("Fetching badges for user");
         const userId = req.params.id;
-        console.log("id: ", userId)
+        //console.log("id: ", userId)
         const badges = await getBadgesByUserIdService(userId);
         return res.status(200).json({
             success: true,
