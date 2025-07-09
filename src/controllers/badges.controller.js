@@ -11,7 +11,7 @@ const getAllBadges = async (req,res) => {
     })
     }catch(err){
         console.error("Error in getAllBadges:", err);
-        res.status(500).json({ error: "Internal server error", success:false });
+        res.status(500).json({ message: "Error getting all badges", success:false, error: err.message });
     }
 }
 
@@ -26,7 +26,7 @@ const getBadgetById = async (req,res) => {
 
     }catch(e){
         console.error("Error in getBadgeById:", e);
-        res.status(500).json({ error: "Internal server error", success:false });
+        res.status(500).json({ message: "Error getting badge by id", success:false, error: e.message });
     }
 }
 
@@ -42,7 +42,7 @@ const getBadgesByUserId = async (req,res) => {
         });
     }catch(e){
         console.error("Error in getBadgesByUserId:", e);
-        res.status(500).json({ error: "Internal server error", success:false });
+        res.status(500).json({ message: "Error getting badges by id-user", success:false, error: e.message });
     }
 }
 
@@ -59,7 +59,7 @@ const addBadgeToUser = async (req,res) => {
         });
     } catch (e) {
         console.error("Error in addBadgeToUser:", e);
-        res.status(500).json({ error: "Internal server error", success:false });
+        res.status(500).json({ message: "Error adding badge to user", success:false, error: e.message });
     }
 }
 

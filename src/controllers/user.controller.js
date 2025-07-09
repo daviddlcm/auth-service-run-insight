@@ -1,4 +1,4 @@
-const { createUserService, getUserByIdService, loginService, updateUserService, updateTrainingCounterService, updateKilometersService, updateBestRhythmService } = require("../services/user.service");
+const { createUserService, getUserByIdService, loginService, updateUserService, updateCounterKilometerBestRhythmService } = require("../services/user.service");
 
 const createUser = async (req, res) => {
   try {
@@ -121,65 +121,87 @@ const updateUserStats = async (req, res) => {
   }
 };
 
-const updateTrainingCounter = async (req, res) => {
-  try {
-    const userId = req.params.id;
+// const updateTrainingCounter = async (req, res) => {
+//   try {
+//     const userId = req.params.id;
 
-    const updatedUser = await updateTrainingCounterService(userId);
-    return res.status(200).json({
-      message: "User training counter updated successfully",
-      // user: updatedUser,
-      success:true
-    });
-  } catch (error) {
-    console.log("Error updating training counter:", error.message);
+//     const updatedUser = await updateTrainingCounterService(userId);
+//     return res.status(200).json({
+//       message: "User training counter updated successfully",
+//       // user: updatedUser,
+//       success:true
+//     });
+//   } catch (error) {
+//     console.log("Error updating training counter:", error.message);
+//     return res.status(500).json({
+//       message: "Error updating training counter",
+//       error: error.message,
+//       success: false
+//     });
+//   }
+// };
+
+// const updateKilometers = async (req, res) => {
+//   try {
+//     const userId = req.params.id;
+//     const { kilometers } = req.body;
+
+//     const updatedUser = await updateKilometersService(userId, kilometers);
+//     return res.status(200).json({
+//       message: "User kilometres updated successfully",
+//       // user: updatedUser,
+//       success:true
+//     });
+//   } catch (error) {
+//     console.log("Error updating kilometres:", error.message);
+//     return res.status(500).json({
+//       message: "Error updating kilometres",
+//       error: error.message,
+//       success: false
+//     });
+//   }
+// };
+
+// const updateBestRhythm = async (req, res) => {
+//   try {
+//     const userId = req.params.id;
+//     const { bestRhythm } = req.body;
+//     //console.log("Best rhythm:", req.body);
+//     const updatedUser = await updateBestRhythmService(userId, bestRhythm);
+//     return res.status(200).json({
+//       message: "User best rhythm updated successfully",
+//       // user: updatedUser,
+//       success:true
+//     });
+//   } catch (error) {
+//     console.log("Error updating best rhythm:", error.message);
+//     return res.status(500).json({
+//       message: "Error updating best rhythm",
+//       error: error.message,
+//       success: false
+//     });
+//   }
+// }
+
+const updateCounterKilometerBestRhythm = async(req,res) => {
+  console.log("updateCounterKilometerBestRhythm called with body:", req.body);
+  try{
+    const {rhythm, km} = req.body;
+    const id = req.headers["user-id"];
+    console.log("Updating user stats with ID:", id, "Rhythm:", rhythm, "Kilometers:", km);
+    const userupdated = updateCounterKilometerBestRhythmService(id, rhythm, km)
+    return res.json(200).json({
+      message:"User was updated successfuly",
+      userupdated,
+      success: true
+    })
+  }catch(e){
+    console.log("Error updating km, best rhythm and trainings: ", e.message)
     return res.status(500).json({
-      message: "Error updating training counter",
-      error: error.message,
+      message:"Error updating km, best rhythm and trainings",
+      error: e.message,
       success: false
-    });
-  }
-};
-
-const updateKilometers = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const { kilometers } = req.body;
-
-    const updatedUser = await updateKilometersService(userId, kilometers);
-    return res.status(200).json({
-      message: "User kilometres updated successfully",
-      // user: updatedUser,
-      success:true
-    });
-  } catch (error) {
-    console.log("Error updating kilometres:", error.message);
-    return res.status(500).json({
-      message: "Error updating kilometres",
-      error: error.message,
-      success: false
-    });
-  }
-};
-
-const updateBestRhythm = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const { bestRhythm } = req.body;
-    //console.log("Best rhythm:", req.body);
-    const updatedUser = await updateBestRhythmService(userId, bestRhythm);
-    return res.status(200).json({
-      message: "User best rhythm updated successfully",
-      // user: updatedUser,
-      success:true
-    });
-  } catch (error) {
-    console.log("Error updating best rhythm:", error.message);
-    return res.status(500).json({
-      message: "Error updating best rhythm",
-      error: error.message,
-      success: false
-    });
+    })
   }
 }
 
@@ -201,8 +223,9 @@ module.exports = {
   login,
   deleteUser,
   updateUserStats,
-  updateTrainingCounter,
-  updateKilometers,
-  updateBestRhythm,
+  // updateTrainingCounter,
+  // updateKilometers,
+  // updateBestRhythm,
+  updateCounterKilometerBestRhythm,
   validate
 };

@@ -33,6 +33,11 @@ app.use("/friends", friendRoutes);
 app.use("/events", eventRoutes)
 app.use("/badges", badgeRoutes);
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+
 
 
 async function startServer() {

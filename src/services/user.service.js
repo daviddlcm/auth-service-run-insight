@@ -6,8 +6,8 @@ const { Follows } = require("../models/index");
 const { Events } = require("../models/index");
 const { Op } = require("sequelize");
 const jwt = require("jsonwebtoken");
-const {uploadImage} = require("../configs/cloudinary.config")
-const fs = require("fs-extra")
+const { uploadImage } = require("../configs/cloudinary.config");
+const fs = require("fs-extra");
 
 const createUserService = async (data) => {
   const t = await User.sequelize.transaction();
@@ -92,7 +92,6 @@ const getUserByIdService = async (id) => {
     const expLevel = await getExperienceLevel(user.stats.exp_level_id);
     //console.log(expLevel)
 
-    
     const newUser = {
       id: user.id,
       name: user.name,
@@ -137,10 +136,10 @@ const loginService = async (email, password) => {
     });
     //console.log(user)
     if (!user) {
-      throw new Error("something went wrong");
+      throw new Error("User or password incorrect");
     }
     if (!user.validatePassword(password)) {
-      throw new Error("something went wrong");
+      throw new Error("User or password incorrect");
     }
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -197,92 +196,118 @@ const updateUserService = async (id, weight, height) => {
   }
 };
 
-const updateTrainingCounterService = async (id) => {
-  try{
-    const user = await UserStats.findByPk(id);
-    if (!user) {
-      throw new Error("User not found");
-    }
-    //console.log(user)
+// const updateTrainingCounterService = async (id) => {
+//   try{
+//     const user = await UserStats.findByPk(id);
+//     if (!user) {
+//       throw new Error("User not found");
+//     }
+//     //console.log(user)
 
-    const updatedUser = await UserStats.update(
-      { training_counter: user.training_counter + 1 },
-      {
-        where: { id },
-        returning: true,
-      }
-    );
-    //console.log(updatedUser)
+//     const updatedUser = await UserStats.update(
+//       { training_counter: user.training_counter + 1 },
+//       {
+//         where: { id },
+//         returning: true,
+//       }
+//     );
+//     //console.log(updatedUser)
 
-    return updatedUser;
-  }catch(error){
-    throw error;
-  }
-}
+//     return updatedUser;
+//   }catch(error){
+//     throw error;
+//   }
+// }
 
-const updateKilometersService = async (id, km) => {
-  //console.log(id, km)
-  const t = await UserStats.sequelize.transaction();
+// const updateKilometersService = async (id, km) => {
+//   //console.log(id, km)
+//   const t = await UserStats.sequelize.transaction();
+//   try {
+//     const user = await UserStats.findByPk(id);
+//     if (!user) {
+//       throw new Error("User not found");
+//     }
+//     //console.log(user)
+
+//     const updatedUser = await UserStats.update(
+//       { km_total: user.km_total + km },
+//       {
+//         where: { id },
+//         returning: true,
+//         transaction: t,
+//       }
+//     );
+//     await t.commit();
+//     //console.log(updatedUser)
+
+//     return updatedUser;
+//   } catch (error) {
+//     await t.rollback();
+//     throw error;
+//   }
+// };
+
+// const updateBestRhythmService = async (id, rhythm) => {
+//   const t = await UserStats.sequelize.transaction();
+//   try {
+//     const user = await UserStats.findByPk(id);
+//     if (!user) {
+//       throw new Error("User not found");
+//     }
+//     // console.log(user.best_rhythm)
+//     // console.log(rhythm)
+//     if (user.best_rhythm >= rhythm) {
+//       //t.rollback()
+//       throw new Error("New rhythm is not better than the current best rhythm");
+//     }
+
+//     const updatedUser = await UserStats.update(
+//       { best_rhythm: rhythm },
+//       {
+//         where: { id },
+//         returning: true,
+//         transaction: t,
+//       }
+//     );
+//     await t.commit();
+//     //console.log(updatedUser)
+
+//     return updatedUser;
+//   } catch (error) {
+//     await t.rollback();
+//     throw error;
+//   }
+// };
+
+const updateCounterKilometerBestRhythmService = async (id, rhythm, km) => {
+  //const t = await UserStats.sequelize.transaction()
   try {
     const user = await UserStats.findByPk(id);
+
     if (!user) {
       throw new Error("User not found");
     }
-    //console.log(user)
 
-    const updatedUser = await UserStats.update(
-      { km_total: user.km_total + km },
+    // if(user.best_rhythm >= rhythm){
+    //   throw new Error("New rhythm is not better than the current best rhythm")
+    // }
+    const updateUser = UserStats.update(
+      {
+        best_rhythm: rhythm,
+        km_total: user.km_total + km,
+        training_counter: user.training_counter + 1,
+      },
       {
         where: { id },
         returning: true,
-        transaction: t,
       }
     );
-    await t.commit();
-    //console.log(updatedUser)
-
-    return updatedUser;
-  } catch (error) {
-    await t.rollback();
-    throw error;
+    return updateUser;
+  } catch (e) {
+    //await t.rollback()
+    throw e;
   }
 };
-
-const updateBestRhythmService = async (id, rhythm) => {
-  const t = await UserStats.sequelize.transaction();
-  try {
-    const user = await UserStats.findByPk(id);
-    if (!user) {
-      throw new Error("User not found");
-    }
-    console.log(user.best_rhythm)
-    console.log(rhythm)
-    if (user.best_rhythm >= rhythm) {
-      //t.rollback()
-      throw new Error("New rhythm is not better than the current best rhythm");
-    }
-
-    const updatedUser = await UserStats.update(
-      { best_rhythm: rhythm },
-      {
-        where: { id },
-        returning: true,
-        transaction: t,
-      }
-    );
-    await t.commit();
-    //console.log(updatedUser)
-
-    return updatedUser;
-  } catch (error) {
-    await t.rollback();
-    throw error;
-  }
-};
-
-
-
-
 
 module.exports = {
   createUserService,
@@ -290,7 +315,8 @@ module.exports = {
   loginService,
   deleteUserService,
   updateUserService,
-  updateTrainingCounterService,
-  updateKilometersService,
-  updateBestRhythmService
+  updateCounterKilometerBestRhythmService,
+  // updateTrainingCounterService,
+  // updateKilometersService,
+  // updateBestRhythmService
 };
