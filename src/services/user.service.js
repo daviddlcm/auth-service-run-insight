@@ -170,17 +170,24 @@ const deleteUserService = async (id) => {
   }
 };
 
-const updateUserService = async (id, weight, height) => {
+const updateUserService = async (id, weight, height, experience) => {
   const t = await UserStats.sequelize.transaction();
   try {
     const user = await UserStats.findByPk(id);
     if (!user) {
       throw new Error("User not found");
     }
-    //console.log
+    const typeExperience = await ExperienceLevel.findOne({
+      where:{name:experience}
+    })
+    if (!typeExperience) {
+      throw new Error("Experience level not found");
+    }
+
+    //console.log("experience: ",typeExperience)
 
     const updatedUser = await UserStats.update(
-      { weight, height },
+      { weight, height, exp_level_id: typeExperience.id },
       {
         where: { id },
         returning: true,
@@ -189,8 +196,8 @@ const updateUserService = async (id, weight, height) => {
     );
     await t.commit();
     //console.log(updatedUser)
-
-    return updatedUser;
+    return true;
+    // return updatedUser;
   } catch (error) {
     await t.rollback();
     throw error;
@@ -201,7 +208,9 @@ const updateUserService = async (id, weight, height) => {
 const updateCounterKilometerBestRhythmService = async (id, rhythm, km, totalKm) => {
   //const t = await UserStats.sequelize.transaction()
   try {
-    const user = await UserStats.findByPk(id);
+    const user = await UserStats.findOne({
+      where: { user_id:id}
+    });
     // newRhythm;
     if (!user) {
       throw new Error("User not found");
@@ -269,6 +278,7 @@ const updateCounterKilometerBestRhythmService = async (id, rhythm, km, totalKm) 
     throw e;
   }
 };
+
 
 module.exports = {
   createUserService,

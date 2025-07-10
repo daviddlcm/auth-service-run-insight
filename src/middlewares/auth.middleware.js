@@ -17,7 +17,7 @@ const authenticateToken = async (req, res, next) => {
     const user = await User.findByPk(decoded.id);
 
     if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
     //console.log(user)
 
@@ -25,9 +25,9 @@ const authenticateToken = async (req, res, next) => {
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ message: 'Token expired' });
+      return res.status(403).json({ message: 'Token expired' });
     }
-    return res.status(401).json({ message: 'Invalid token' });
+    return res.status(403).json({ message: 'Invalid token' });
   }
 };
 

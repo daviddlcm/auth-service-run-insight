@@ -103,9 +103,9 @@ const deleteUser = async (req,res) => {
 const updateUserStats = async (req, res) => {
   try {
     const userId = req.params.id;
-    const {weight, height} = req.body;
+    const {weight, height, experience} = req.body;
 
-    const updatedUser = await updateUserService(userId, weight, height);
+    const updatedUser = await updateUserService(userId, weight, height,experience);
     return res.status(200).json({
       message: "User updated successfully",
       // user: updatedUser,
