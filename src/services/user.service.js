@@ -212,14 +212,17 @@ const updateCounterKilometerBestRhythmService = async (id, rhythm, km, totalKm) 
       where: { user_id:id}
     });
     // newRhythm;
-    console.log(user)
+    //console.log(user)
     if (!user) {
       throw new Error("User not found");
     }
     //update rhythm if it is better than the current one
     // console.log(user.best_rhythm)
     // console.log(rhythm)
-    let newRhythm = user.best_rhythm >= rhythm ? user.best_rhythm : rhythm;
+    let newRhythm = user.best_rhythm >= rhythm ? rhythm :  user.best_rhythm;
+    if( user.best_rhythm === 0){
+      newRhythm = rhythm;
+    }
     //console.log("New rhythm:", newRhythm)
 
     const badgeConditions = [
@@ -249,7 +252,11 @@ const updateCounterKilometerBestRhythmService = async (id, rhythm, km, totalKm) 
             id_user: id,
             id_badge: badge.id,
           });
-
+          await UserStats.update({
+            training_streak: user.training_streak + 1
+          },{
+            where: { user_id: id}
+          })
           earnedBadges.push(badge);
         }
       }
@@ -260,9 +267,9 @@ const updateCounterKilometerBestRhythmService = async (id, rhythm, km, totalKm) 
     // const updateUser = {
     //   message:"si"
     // }
-    console.log("km total", km),
-    console.log("rhythm user", rhythm),
-    console.log("new rhythm", newRhythm)
+    // console.log("km total", km),
+    // console.log("rhythm user", rhythm),
+    // console.log("new rhythm", newRhythm)
     const updateuserResponse = await UserStats.update(
       {
         best_rhythm: newRhythm,
@@ -274,7 +281,7 @@ const updateCounterKilometerBestRhythmService = async (id, rhythm, km, totalKm) 
         returning: true,
       }
     );
-    console.log("updateuserResponse: ", updateuserResponse)
+    //console.log("updateuserResponse: ", updateuserResponse)
 
 
     return earnedBadges.length > 0 ? earnedBadges : [];
