@@ -8,6 +8,7 @@ const { Op } = require("sequelize");
 const jwt = require("jsonwebtoken");
 const { uploadImage } = require("../configs/cloudinary.config");
 const fs = require("fs-extra");
+const { Badges, UserBadges } = require("../models/index");
 
 const createUserService = async (data) => {
   const t = await User.sequelize.transaction();
@@ -196,104 +197,62 @@ const updateUserService = async (id, weight, height) => {
   }
 };
 
-// const updateTrainingCounterService = async (id) => {
-//   try{
-//     const user = await UserStats.findByPk(id);
-//     if (!user) {
-//       throw new Error("User not found");
-//     }
-//     //console.log(user)
 
-//     const updatedUser = await UserStats.update(
-//       { training_counter: user.training_counter + 1 },
-//       {
-//         where: { id },
-//         returning: true,
-//       }
-//     );
-//     //console.log(updatedUser)
-
-//     return updatedUser;
-//   }catch(error){
-//     throw error;
-//   }
-// }
-
-// const updateKilometersService = async (id, km) => {
-//   //console.log(id, km)
-//   const t = await UserStats.sequelize.transaction();
-//   try {
-//     const user = await UserStats.findByPk(id);
-//     if (!user) {
-//       throw new Error("User not found");
-//     }
-//     //console.log(user)
-
-//     const updatedUser = await UserStats.update(
-//       { km_total: user.km_total + km },
-//       {
-//         where: { id },
-//         returning: true,
-//         transaction: t,
-//       }
-//     );
-//     await t.commit();
-//     //console.log(updatedUser)
-
-//     return updatedUser;
-//   } catch (error) {
-//     await t.rollback();
-//     throw error;
-//   }
-// };
-
-// const updateBestRhythmService = async (id, rhythm) => {
-//   const t = await UserStats.sequelize.transaction();
-//   try {
-//     const user = await UserStats.findByPk(id);
-//     if (!user) {
-//       throw new Error("User not found");
-//     }
-//     // console.log(user.best_rhythm)
-//     // console.log(rhythm)
-//     if (user.best_rhythm >= rhythm) {
-//       //t.rollback()
-//       throw new Error("New rhythm is not better than the current best rhythm");
-//     }
-
-//     const updatedUser = await UserStats.update(
-//       { best_rhythm: rhythm },
-//       {
-//         where: { id },
-//         returning: true,
-//         transaction: t,
-//       }
-//     );
-//     await t.commit();
-//     //console.log(updatedUser)
-
-//     return updatedUser;
-//   } catch (error) {
-//     await t.rollback();
-//     throw error;
-//   }
-// };
-
-const updateCounterKilometerBestRhythmService = async (id, rhythm, km) => {
+const updateCounterKilometerBestRhythmService = async (id, rhythm, km, totalKm) => {
   //const t = await UserStats.sequelize.transaction()
   try {
     const user = await UserStats.findByPk(id);
-
+    // newRhythm;
     if (!user) {
       throw new Error("User not found");
     }
+    //update rhythm if it is better than the current one
+    // console.log(user.best_rhythm)
+    // console.log(rhythm)
+    let newRhythm = user.best_rhythm >= rhythm ? rhythm : user.best_rhythm;
+    //console.log("New rhythm:", newRhythm)
 
-    // if(user.best_rhythm >= rhythm){
-    //   throw new Error("New rhythm is not better than the current best rhythm")
+    const badgeConditions = [
+      { id: 6, km: 50 },
+      { id: 5, km: 42 },
+      { id: 4, km: 20 },
+      { id: 3, km: 15 },
+      { id: 2, km: 10 },
+      { id: 1, km: 5 },
+    ];
+    
+    const earnedBadges = [];
+
+    for (const condition of badgeConditions) {
+      if (totalKm >= condition.km) {
+        const badge = await Badges.findByPk(condition.id);
+
+        const existingUserBadge = await UserBadges.findOne({
+          where: {
+            id_user: id,
+            id_badge: badge.id,
+          },
+        });
+
+        if (!existingUserBadge) {
+           await UserBadges.create({
+            id_user: id,
+            id_badge: badge.id,
+          });
+
+          earnedBadges.push(badge);
+        }
+      }
+    }
+    // console.log("km total esta semana", totalKm);
+    // console.log("Earned badges:", earnedBadges.map(badge => badge.name));
+
+    // const updateUser = {
+    //   message:"si"
     // }
-    const updateUser = UserStats.update(
+    await UserStats.update(
       {
-        best_rhythm: rhythm,
+        best_rhythm: newRhythm,
         km_total: user.km_total + km,
         training_counter: user.training_counter + 1,
       },
@@ -302,7 +261,9 @@ const updateCounterKilometerBestRhythmService = async (id, rhythm, km) => {
         returning: true,
       }
     );
-    return updateUser;
+
+
+    return earnedBadges.length > 0 ? earnedBadges : [];
   } catch (e) {
     //await t.rollback()
     throw e;

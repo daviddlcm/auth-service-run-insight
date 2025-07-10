@@ -184,15 +184,16 @@ const updateUserStats = async (req, res) => {
 // }
 
 const updateCounterKilometerBestRhythm = async(req,res) => {
-  console.log("updateCounterKilometerBestRhythm called with body:", req.body);
+  //console.log("updateCounterKilometerBestRhythm called with body:", req.body);
   try{
-    const {rhythm, km} = req.body;
+    const {rhythm, km, totalKm} = req.body;
     const id = req.headers["user-id"];
-    console.log("Updating user stats with ID:", id, "Rhythm:", rhythm, "Kilometers:", km);
-    const userupdated = updateCounterKilometerBestRhythmService(id, rhythm, km)
-    return res.json(200).json({
+    //console.log("Updating user stats with ID: ", id, "Rhythm: ", rhythm, "Kilometers: ", km, "Total Kilometers: ", totalKm);
+    const userupdated = await updateCounterKilometerBestRhythmService(id, rhythm, km, totalKm)
+    //console.log(userupdated)
+    return res.status(200).json({
       message:"User was updated successfuly",
-      userupdated,
+      badges: userupdated,
       success: true
     })
   }catch(e){
