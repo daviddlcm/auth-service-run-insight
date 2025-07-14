@@ -176,28 +176,37 @@ const updateUserService = async (id, weight, height, experience) => {
     const user = await UserStats.findOne({
       where: { user_id: id },
     });
+    //console.log(user)
     if (!user) {
       throw new Error("User not found");
     }
     const typeExperience = await ExperienceLevel.findOne({
       where:{name:experience}
     })
+    //console.log(typeExperience)
     if (!typeExperience) {
       throw new Error("Experience level not found");
     }
 
     //console.log("experience: ",typeExperience)
-    console.log("weight: ", weight)
-    console.log("height: ", height)
+    // console.log("weight: ", weight)
+    // console.log("height: ", height)
+    // console.log("Experience: ", typeExperience.id)
 
     const updatedUser = await UserStats.update(
       { weight: weight, height:height, exp_level_id: typeExperience.id },
       {
-        where: { id },
+        where: { user_id: id },
         returning: true,
         transaction: t,
       }
     );
+    //console.log("Updated user: ", updatedUser)
+
+    if (updatedUser[1] == 0) {
+      throw new Error("User not updated");
+    }
+    
     await t.commit();
     //console.log(updatedUser)
     return true;
