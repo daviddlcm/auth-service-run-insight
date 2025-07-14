@@ -173,7 +173,7 @@ const deleteUserService = async (id) => {
 const updateUserService = async (id, weight, height, experience) => {
   const t = await UserStats.sequelize.transaction();
   try {
-    const user = await UserStats.findByPk({
+    const user = await UserStats.findOne({
       user_id: id,
     });
     if (!user) {
