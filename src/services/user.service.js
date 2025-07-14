@@ -174,7 +174,7 @@ const updateUserService = async (id, weight, height, experience) => {
   const t = await UserStats.sequelize.transaction();
   try {
     const user = await UserStats.findOne({
-      user_id: id,
+      where: { user_id: id },
     });
     if (!user) {
       throw new Error("User not found");
