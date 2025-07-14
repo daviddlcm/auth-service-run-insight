@@ -187,9 +187,11 @@ const updateUserService = async (id, weight, height, experience) => {
     }
 
     //console.log("experience: ",typeExperience)
+    console.log("weight: ", weight)
+    console.log("height: ", height)
 
     const updatedUser = await UserStats.update(
-      { weight, height, exp_level_id: typeExperience.id },
+      { weight: weight, height:height, exp_level_id: typeExperience.id },
       {
         where: { id },
         returning: true,
