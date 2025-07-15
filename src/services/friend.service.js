@@ -71,7 +71,6 @@ const getAllMyFriendsService = async (userId) => {
       throw new Error("User not found");
     }
 
-    // Obtener todos los amigos
     const friends = await Follows.findAll({
       where: {
         following_user_id: userId,
@@ -92,16 +91,13 @@ const getAllMyFriendsService = async (userId) => {
       ],
     });
 
-    // Crear el array con el usuario actual y sus amigos
     const allUsers = [
-      // Incluir el usuario actual
       {
         id: user.id,
         username: user.username,
         email: user.email,
         stats: user.stats,
       },
-      // Incluir todos los amigos
       ...friends.map((friend) => ({
         id: friend.followedUser.id,
         username: friend.followedUser.username,
@@ -110,20 +106,17 @@ const getAllMyFriendsService = async (userId) => {
       })),
     ];
 
-    // Ordenar por km_total DESC, y en caso de empate por training_counter ASC
     allUsers.sort((a, b) => {
       const kmA = a.stats?.km_total || 0;
       const kmB = b.stats?.km_total || 0;
       const trainingA = a.stats?.training_counter || 0;
       const trainingB = b.stats?.training_counter || 0;
 
-      // Primero ordenar por km_total descendente
+      
       if (kmA !== kmB) {
         return kmB - kmA;
       }
       
-      // Si tienen los mismos km, ordenar por training_counter ascendente
-      // (menos entrenamientos primero)
       return trainingA - trainingB;
     });
 
