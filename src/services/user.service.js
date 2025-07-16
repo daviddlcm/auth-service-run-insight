@@ -313,6 +313,6 @@ module.exports = {
   updateUserService,
   updateCounterKilometerBestRhythmService,
   // updateTrainingCounterService,
-  // updateKilometersService,
+  // updateKilometersService,6+
   // updateBestRhythmService
 };
