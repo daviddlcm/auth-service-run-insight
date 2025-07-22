@@ -16,9 +16,25 @@ const createUserService = async (data) => {
     const { name, email, password, username, gender, birthdate, user_stats } =
       data;
 
+
+    const emailExists = await User.findOne({
+      where: { email },
+    })
+    if (emailExists) {
+      throw new Error("Email Ya está en uso");
+    }
+    const usernameExists = await User.findOne({
+      where: { username },  
+    });
+    if (usernameExists) {
+      throw new Error("Username Ya está en uso");
+    }
+
     const genderFound = await Genders.findOne({
       where: { gender },
     });
+
+    
 
     const user = await User.create(
       {
@@ -137,10 +153,10 @@ const loginService = async (email, password) => {
     });
     //console.log(user)
     if (!user) {
-      throw new Error("User or password incorrect");
+      throw new Error("Usuario o contraseña incorrectos");
     }
     if (!user.validatePassword(password)) {
-      throw new Error("User or password incorrect");
+      throw new Error("Usuario o contraseña incorrectos");
     }
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
@@ -180,6 +196,7 @@ const updateUserService = async (id, weight, height, experience) => {
     if (!user) {
       throw new Error("User not found");
     }
+    //console.log("experience: ", experience)
     const typeExperience = await ExperienceLevel.findOne({
       where:{name:experience}
     })

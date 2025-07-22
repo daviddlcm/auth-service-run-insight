@@ -50,7 +50,7 @@ const getUserById = async (req,res) => {
 const login = async (req,res) => {
   try{
     const {email, password} = req.body;
-    console.log("Login attempt with email:", email," ", password);
+    //console.log("Login attempt with email:", email," ", password);
 
     const user = await loginService(email,password)
 
@@ -105,7 +105,7 @@ const updateUserStats = async (req, res) => {
     const userId = req.params.id;
     const {weight, height, experience} = req.body;
 
-    const updatedUser = await updateUserService(userId, weight, height,experience);
+    const updatedUser = await updateUserService(userId, weight, height, experience);
     return res.status(200).json({
       message: "User updated successfully",
       // user: updatedUser,
