@@ -321,6 +321,103 @@ const updateCounterKilometerBestRhythmService = async (id, rhythm, km, totalKm) 
   }
 };
 
+const getNumberOfClientsService = async (idToken) => {
+  try {
+    //console.log("Getting number of clients for user ID: ", idToken);
+    const user = await User.findByPk(idToken);
+    //.log("User Roles ID:", user);
+    if(user.rolesId !== 1) {
+      throw new Error("Unauthorized, you are not an admin");
+    }
+    const count = await User.count({
+      where: {
+        rolesId: 2, 
+      },
+    });
+    console.log("Number of clients:", count);
+    return count;
+  } catch (error) {
+    throw error;
+  }
+}
+
+const getNumberOfThisMonthClientsService = async (idToken) => {
+  try {
+    const user = await User.findByPk(idToken);
+    if(user.rolesId !== 1) {
+      throw new Error("Unauthorized, you are not an admin");
+    }
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    const count = await User.count({
+      where: {
+        rolesId: 2, 
+        createdAt: {
+          [Op.gte]: startOfMonth,
+        },
+      },
+    });
+    console.log("Number of clients this month:", count);
+    return count;
+  } catch (error) {
+    throw error;
+  }
+}
+
+const getAllClientsService = async (idToken, limit, page) => {
+  try {
+    limit = parseInt(limit) ;
+    page = parseInt(page) ;
+    const user = await User.findByPk(idToken);
+    if(user.rolesId !== 1) {
+      throw new Error("Unauthorized, you are not an admin");
+    }
+    const where = { rolesId: 2 };
+    const include = [
+      {
+        model: UserStats,
+        as: "stats",
+      },
+    ];
+
+    // Si NO hay paginación, traer TODO
+    if (!page || !limit) {
+      const clients = await User.findAll({
+        where,
+        include,
+      });
+
+      return {
+        data: clients,
+        pagination: null,
+      };
+    }
+
+    // Si SÍ hay paginación
+    const offset = (page - 1) * limit;
+
+    // Traer datos paginados
+    const { count, rows } = await User.findAndCountAll({
+      where,
+      include,
+      limit: limit,
+      offset: offset,
+    });
+
+    return {
+      data: rows,
+      pagination: {
+        totalItems: count,
+        currentPage: page,
+        pageSize: limit,
+        totalPages: Math.ceil(count / limit),
+      },
+    };
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 module.exports = {
   createUserService,
@@ -331,5 +428,8 @@ module.exports = {
   updateCounterKilometerBestRhythmService,
   // updateTrainingCounterService,
   // updateKilometersService,6+
-  // updateBestRhythmService
+  // updateBestRhythmService,
+  getNumberOfClientsService,
+  getNumberOfThisMonthClientsService,
+  getAllClientsService
 };

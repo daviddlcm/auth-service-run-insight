@@ -23,7 +23,11 @@ router.patch("/:id", userController.updateUserStats)
 // router.patch("/best-rhythm/:id", userController.updateBestRhythm)
 
 //router.post("/event/:id", userController.addEvent)
+router.get("/number/clients", userController.getNumberOfClients)
 
+router.get("/number/clients/month", userController.getNumberOfThisMonthClients)
+
+router.get("/all/clients", userController.getAllClients)
 
 router.get("/validate/token", authenticateToken ,userController.validate)
 

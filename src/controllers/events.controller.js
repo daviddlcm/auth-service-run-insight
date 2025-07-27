@@ -1,4 +1,4 @@
-const {createEventService, getAllEventsService, getEventByIdService, getEventByFutureDateService} = require("../services/events.service")
+const {createEventService, getAllEventsService, getEventByIdService, getEventByFutureDateService, getNumberOfEventsFuturesService} = require("../services/events.service")
 const addEvent = async(req,res) => {
   try {
     const userId = req.params.id;
@@ -92,10 +92,40 @@ const getEventByFutureDate = async(req,res) => {
     }
 }
 
+const getNumberOfEventsFutures = async (req,res) => {
+    try{
+        //console.log("Counting future events");
+        const idToken = req.headers["user-id"]
+        const date = req.query.date;
+        if(!date) {
+            return res.status(400).json({
+                message: "Date is required",
+                success: false
+            })
+        }
+
+        const futureEvents = await getNumberOfEventsFuturesService(idToken,date);
+        //console.log("Number of future events:", futureEvents.length);
+        return res.status(200).json({
+            message: "Number of future events fetched successfully",
+            count: futureEvents,
+            success: true
+        });
+    }catch(e){
+        //console.log("Error counting future events:", e.message);
+        return res.status(500).json({
+            message: "Error counting future events",
+            error: e.message,
+            success: false
+        });
+    }
+}
+
 
 module.exports ={
     addEvent,
     getAllEvents,
     getEventById,
-    getEventByFutureDate
+    getEventByFutureDate,
+    getNumberOfEventsFutures
 }

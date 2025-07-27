@@ -86,9 +86,14 @@ const getEventByIdService = async (eventId) => {
     }
 }
 
-const getEventByFutureDateService = async (dateUnknown) => {
+const getEventByFutureDateService = async (idToken,dateUnknown) => {
     try {
         //const todayInUTC = getStartOfMexicoDayUtc();
+        const user = User.findByPk(idToken);
+        if(user.rolesId !== 1) {
+            throw new Error("Unauthorized, you are not an admin");
+        }
+        
         const date = new Date(dateUnknown);
         //console.log(date)
         if(!date) {
@@ -113,7 +118,24 @@ const getEventByFutureDateService = async (dateUnknown) => {
     }
 }
 
-
+const getNumberOfEventsFuturesService = async (dateUnknown) => {
+    try {
+        const today = new Date(dateUnknown);
+        if(!today) {
+            throw new Error("Date is required");
+        }
+        const futureEventsCount = await Events.count({
+            where: {
+                date_event: {
+                    [Op.gte]: today
+                }
+            }
+        });
+        return futureEventsCount;
+    } catch (error) {
+        throw new Error("Error counting future events: " + error.message);
+    }
+}
 
 
 
@@ -121,5 +143,6 @@ module.exports ={
     createEventService,
     getAllEventsService,
     getEventByIdService,
-    getEventByFutureDateService
+    getEventByFutureDateService,
+    getNumberOfEventsFuturesService
 }

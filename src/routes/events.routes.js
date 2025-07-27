@@ -19,4 +19,6 @@ router.post(
 
 router.get("/:id", eventsController.getEventById)
 
+router.get("/by/future/count", eventsController.getNumberOfEventsFutures);
+
 module.exports = router;

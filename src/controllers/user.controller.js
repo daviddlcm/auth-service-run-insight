@@ -1,4 +1,4 @@
-const { createUserService, getUserByIdService, loginService, updateUserService, updateCounterKilometerBestRhythmService } = require("../services/user.service");
+const { createUserService, getUserByIdService, loginService, updateUserService, updateCounterKilometerBestRhythmService, getNumberOfClientsService, getNumberOfThisMonthClientsService, getAllClientsService } = require("../services/user.service");
 
 const createUser = async (req, res) => {
   try {
@@ -206,6 +206,64 @@ const updateCounterKilometerBestRhythm = async(req,res) => {
   }
 }
 
+const getNumberOfClients = async (req, res) => {
+  try{
+    //console.log("entro a getNumber of clients")
+    const idToken = req.headers["user-id"];
+    //console.log("Getting number of clients for user ID: ", idToken);
+    const numberOfClients = await getNumberOfClientsService(idToken);
+    return res.status(200).json({
+      message: "Number of clients retrieved successfully",
+      numberOfClients,
+      success: true
+    });
+  }catch(e){
+    return res.status(500).json({
+      message: "Error getting number of clients",
+      error: e.message,
+      success: false
+    })
+  }
+}
+
+const getNumberOfThisMonthClients = async (req, res) => {
+  try{
+    const idToken = req.headers["user-id"]; // Assuming the user ID is stored in req.user
+    const numberOfClients = await getNumberOfThisMonthClientsService(idToken);
+    return res.status(200).json({
+      message: "Number of clients this month retrieved successfully",
+      numberOfClients,
+      success: true
+    });
+  }catch(e){
+    return res.status(500).json({
+      message: "Error getting number of clients this month",
+      error: e.message,
+      success: false
+    })
+  }
+}
+
+const getAllClients = async (req,res) => {
+  try{
+    const idToken = req.headers["user-id"];
+    const { limit, page } = req.query;
+    //console.log("entro")
+    const clients = await getAllClientsService(idToken, limit, page);
+    return res.status(200).json({
+      message: "All clients retrieved successfully",
+      clients,
+      success: true
+    });
+  }catch(e){
+    return res.status(500).json({
+      message: "Error getting all clients",
+      error: e.message,
+      success: false
+    })
+  }
+}
+
 
 
 const validate = async (req,res) => {
@@ -228,5 +286,8 @@ module.exports = {
   // updateKilometers,
   // updateBestRhythm,
   updateCounterKilometerBestRhythm,
-  validate
+  validate,
+  getNumberOfClients,
+  getNumberOfThisMonthClients,
+  getAllClients
 };
