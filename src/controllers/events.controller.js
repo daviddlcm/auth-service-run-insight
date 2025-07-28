@@ -76,6 +76,7 @@ const getEventByFutureDate = async(req,res) => {
         //console.log("Fetching events with future date");
         //console.log(req.query)
         const {date} = req.query;
+        //console.log("date: ", date)
         const events = await getEventByFutureDateService(date);
         return res.status(200).json({
             message: "Events fetched successfully",

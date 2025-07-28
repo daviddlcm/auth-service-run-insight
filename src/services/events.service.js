@@ -86,13 +86,13 @@ const getEventByIdService = async (eventId) => {
     }
 }
 
-const getEventByFutureDateService = async (idToken,dateUnknown) => {
+const getEventByFutureDateService = async (dateUnknown) => {
     try {
         //const todayInUTC = getStartOfMexicoDayUtc();
-        const user = User.findByPk(idToken);
-        
+        //const user = User.findByPk(idToken);
+        //console.log("today today: ", dateUnknown)
         const date = new Date(dateUnknown);
-        //console.log(date)
+        //console.log("today: ",date)
         if(!date) {
             throw new Error("Date is required");
         }
