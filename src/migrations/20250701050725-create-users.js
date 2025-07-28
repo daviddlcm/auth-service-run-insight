@@ -47,14 +47,6 @@ module.exports = {
         onUpdate: "CASCADE",
         onDelete: "CASCADE",
       },
-      // iconId: {
-      // type: DataTypes.INTEGER.UNSIGNED,
-      //     allowNull: false,
-      //     references: {
-      //         model:"Icons",
-      //         key:"id"
-      //     }
-      // },
       rolesId: {
         type: Sequelize.INTEGER.UNSIGNED,
         allowNull: false,

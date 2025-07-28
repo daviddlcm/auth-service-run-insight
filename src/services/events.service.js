@@ -90,9 +90,6 @@ const getEventByFutureDateService = async (idToken,dateUnknown) => {
     try {
         //const todayInUTC = getStartOfMexicoDayUtc();
         const user = User.findByPk(idToken);
-        if(user.rolesId !== 1) {
-            throw new Error("Unauthorized, you are not an admin");
-        }
         
         const date = new Date(dateUnknown);
         //console.log(date)
@@ -118,9 +115,11 @@ const getEventByFutureDateService = async (idToken,dateUnknown) => {
     }
 }
 
-const getNumberOfEventsFuturesService = async (dateUnknown) => {
+const getNumberOfEventsFuturesService = async (idToken,dateUnknown) => {
     try {
         const today = new Date(dateUnknown);
+        //console.log("today today: ", dateUnknown)
+        //console.log("today: ", today)
         if(!today) {
             throw new Error("Date is required");
         }
@@ -130,6 +129,7 @@ const getNumberOfEventsFuturesService = async (dateUnknown) => {
                     [Op.gte]: today
                 }
             }
+            
         });
         return futureEventsCount;
     } catch (error) {
